@@ -1,38 +1,38 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { getGreeting } from '../../utils/dateUtils';
 
 export default function Header() {
   const { user } = useApp();
-  const greeting = getGreeting(user?.name);
-
+  
   return (
     <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, maxWidth: '480px', margin: '0 auto',
-      height: 'var(--header-height)', backgroundColor: 'white', zIndex: 100,
-      boxShadow: '0 2px 8px rgba(0,0,0,0.06)', padding: '0 16px', display: 'flex',
-      alignItems: 'center', justifyContent: 'space-between'
+      height: 'var(--header-height)', backgroundColor: 'white', display: 'flex',
+      alignItems: 'center', justifyContent: 'space-between', padding: '0 16px',
+      boxShadow: '0 2px 10px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 100
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <span style={{ fontSize: '24px', color: 'var(--green)' }}>💚</span>
-        <span style={{ fontSize: '24px', fontWeight: 900, color: 'var(--green)', fontFamily: "'Cairo', sans-serif" }}>رفيق</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <img 
+          src="/logo.jpg" 
+          alt="رفيق" 
+          style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
+          onError={(e) => { 
+            e.target.onerror = null; 
+            e.target.style.display = 'none'; 
+          }} 
+        />
+        <span style={{ fontSize: '24px', fontWeight: 900, color: 'var(--green)' }}>رفيق</span>
       </div>
-
-      <div style={{
-        fontSize: '16px', color: 'var(--text-muted)', maxWidth: '50%',
-        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        textAlign: 'center', fontFamily: "'Cairo', sans-serif"
-      }}>
-        {greeting}
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{user?.name}</span>
+        <div style={{
+          width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--blue-light)',
+          color: 'var(--blue)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '20px'
+        }}>
+          👤
+        </div>
       </div>
-
-      <button style={{
-        width: '40px', height: '40px', minHeight: '40px', backgroundColor: 'transparent',
-        border: 'none', fontSize: '24px', padding: 0, display: 'flex',
-        alignItems: 'center', justifyContent: 'center', color: 'var(--text)', cursor: 'pointer'
-      }}>
-        🔔
-      </button>
     </header>
   );
 }

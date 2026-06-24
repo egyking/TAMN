@@ -1,16 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../shared/Modal';
 import { extractYouTubeId, getEmbedUrl, isYouTubeUrl, isGDriveUrl, getGDriveEmbedUrl } from '../../utils/youtube';
+import { getVideoBlob } from '../../utils/db';
 
 export default function VideoEmbed({ memory, onClose }) {
+  const [localVideoUrl, setLocalVideoUrl] = useState(null);
+
+  useEffect(() => {
+    if (memory?.isLocalVideo) {
+      getVideoBlob(memory.id).then(blob => {
+        if (blob) {
+          setLocalVideoUrl(URL.createObjectURL(blob));
+        }
+      });
+    }
+    return () => {
+      if (localVideoUrl) URL.revokeObjectURL(localVideoUrl);
+    };
+  }, [memory]);
+
   if (!memory) return null;
 
-  const isYT = isYouTubeUrl(memory.link);
-  const isGDrive = isGDriveUrl(memory.link);
+  const isYT = isYouTubeUrl(memory?.link);
+  const isGDrive = isGDriveUrl(memory?.link);
 
   return (
     <Modal isOpen={!!memory} onClose={onClose} title={memory.title}>
-      {isYT ? (
+      {memory.isLocalVideo ? (
+        localVideoUrl ? (
+          <video
+            src={localVideoUrl}
+            controls
+            autoPlay
+            style={{ width: '100%', borderRadius: '12px', backgroundColor: 'black' }}
+          />
+        ) : (
+          <div style={{ textAlign: 'center', padding: '40px' }}>جاري تحميل الفيديو...</div>
+        )
+      ) : isYT ? (
         <iframe
           src={getEmbedUrl(extractYouTubeId(memory.link))}
           style={{ width: '100%', aspectRatio: '16/9', borderRadius: '12px', border: 'none' }}

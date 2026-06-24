@@ -1,36 +1,54 @@
 import React, { useState } from 'react';
-import { extractYouTubeId, getYouTubeThumbnail, isYouTubeUrl, isGDriveUrl } from '../../utils/youtube';
-import { formatArabicDate } from '../../utils/dateUtils';
 import ConfirmDialog from '../shared/ConfirmDialog';
-
-const CAT_MAP = {
-  wisdom: { label: 'حكمة', emoji: '📖', bg: '#FFF3E0' },
-  career: { label: 'شغل', emoji: '💼', bg: '#E3F2FD' },
-  recipe: { label: 'وصفة', emoji: '🍳', bg: '#FFF8E1' },
-  faith:  { label: 'دعاء', emoji: '📿', bg: '#E8F5E3' },
-  stories:{ label: 'قصة',  emoji: '🎭', bg: '#F3E5F5' },
-  advice: { label: 'نصيحة',emoji: '❤️', bg: '#FFEBEE' },
-};
+import { extractYouTubeId, getYouTubeThumbnail, isYouTubeUrl } from '../../utils/youtube';
+import { deleteVideoBlob } from '../../utils/db';
 
 export default function MemoryCard({ memory, onPlay, onDelete }) {
   const [showConfirm, setShowConfirm] = useState(false);
-  const badge = CAT_MAP[memory.category] || { label: 'أخرى', emoji: '📋', bg: '#F5F7FA' };
-  
-  const isYT = isYouTubeUrl(memory.link);
-  const isGDrive = isGDriveUrl(memory.link);
+
+  const getThumbnail = () => {
+    if (memory.isLocalVideo) return null; // Handled in render
+    if (isYouTubeUrl(memory.link)) {
+      return getYouTubeThumbnail(extractYouTubeId(memory.link));
+    }
+    return null;
+  };
+
+  const thumb = getThumbnail();
 
   return (
-    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-      {isYT && (
+    <div className="card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+      <button 
+        onClick={() => setShowConfirm(true)}
+        style={{
+          position: 'absolute', top: '12px', left: '12px', width: '40px', height: '40px',
+          borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)', color: 'var(--red)',
+          border: 'none', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}
+      >
+        <i className="fa-solid fa-trash"></i>
+      </button>
+
+      {memory.isLocalVideo ? (
         <div 
           onClick={onPlay}
-          style={{ height: '180px', position: 'relative', cursor: 'pointer', backgroundColor: 'black' }}
+          style={{ height: '180px', position: 'relative', cursor: 'pointer', backgroundColor: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <img 
-            src={getYouTubeThumbnail(extractYouTubeId(memory.link))} 
-            alt="Thumbnail"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
-          />
+          <div style={{
+            width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.3)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white'
+          }}>
+            <i className="fa-solid fa-play" style={{ fontSize: '28px', marginLeft: '4px' }}></i>
+          </div>
+          <div style={{ position: 'absolute', bottom: '8px', right: '8px', backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 8px', borderRadius: '12px', fontSize: '14px' }}>
+            فيديو مسجل 🎥
+          </div>
+        </div>
+      ) : thumb ? (
+        <div 
+          onClick={onPlay}
+          style={{ height: '180px', backgroundImage: `url(${thumb})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', cursor: 'pointer' }}
+        >
           <div style={{
             position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.6)',
@@ -39,62 +57,35 @@ export default function MemoryCard({ memory, onPlay, onDelete }) {
             <i className="fa-solid fa-play" style={{ fontSize: '28px', marginLeft: '4px' }}></i>
           </div>
         </div>
-      )}
-
-      {isGDrive && (
+      ) : (
         <div 
           onClick={onPlay}
-          style={{ 
-            height: '80px', backgroundColor: 'var(--green-light)', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            fontSize: '18px', fontWeight: 'bold', color: 'var(--green)'
-          }}
+          style={{ height: '180px', backgroundColor: 'var(--blue-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--blue)', fontSize: '48px' }}
         >
-          <span style={{ fontSize: '36px' }}>📁</span> Google Drive
+          <i className="fa-solid fa-link"></i>
         </div>
       )}
 
       <div style={{ padding: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            backgroundColor: badge.bg, padding: '4px 12px', borderRadius: '20px',
-            fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold'
-          }}>
-            <span>{badge.emoji}</span> {badge.label}
-          </div>
-          <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-            {formatArabicDate(memory.date)}
-          </div>
+        <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>{memory.title}</h3>
+        {memory.description && <p style={{ fontSize: '16px', color: 'var(--text-muted)', marginBottom: '12px' }}>{memory.description}</p>}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-muted)' }}>
+          <span>{memory.date}</span>
         </div>
-
-        <h3 style={{ fontSize: '20px', fontWeight: 700, marginTop: '8px' }}>{memory.title}</h3>
-        
-        {memory.description && (
-          <p style={{ fontSize: '16px', color: 'var(--text-muted)', marginTop: '4px' }}>
-            {memory.description}
-          </p>
-        )}
-
-        <button 
-          onClick={() => setShowConfirm(true)}
-          style={{
-            backgroundColor: 'transparent', border: 'none', color: 'var(--red)',
-            fontSize: '16px', padding: 0, marginTop: '12px', minHeight: 'auto',
-            fontFamily: "'Cairo', sans-serif", fontWeight: 'bold'
-          }}
-        >
-          حذف
-        </button>
       </div>
 
       <ConfirmDialog
         isOpen={showConfirm}
         title="حذف الذكرى؟"
-        message="هل أنت متأكد أنك تريد حذف هذه الذكرى؟"
+        message="هل أنت متأكد أنك تريد حذف هذه الذكرى نهائياً؟"
         confirmLabel="نعم، احذف"
         cancelLabel="تراجع"
         confirmColor="var(--red)"
-        onConfirm={() => { onDelete(); setShowConfirm(false); }}
+        onConfirm={() => { 
+          if (memory.isLocalVideo) deleteVideoBlob(memory.id);
+          onDelete(); 
+          setShowConfirm(false); 
+        }}
         onCancel={() => setShowConfirm(false)}
       />
     </div>
