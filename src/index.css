@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+:root {
+  --green: #2EAA1C;
+  --green-dark: #1D7A11;
+  --green-light: #E8F5E3;
+  --blue: #1A7DC4;
+  --blue-light: #E3F2FD;
+  --orange: #F57C00;
+  --orange-light: #FFF3E0;
+  --red: #D32F2F;
+  --red-light: #FFEBEE;
+  --purple: #7B1FA2;
+  --purple-light: #F3E5F5;
+  --bg: #F5F7FA;
+  --surface: #FFFFFF;
+  --text: #1A1A2E;
+  --text-muted: #6B7280;
+  --border: #E5E7EB;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-full: 50px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  --nav-height: 72px;
+  --header-height: 64px;
+  --transition: all 0.2s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { direction: rtl; }
+body {
+  font-family: 'Cairo', sans-serif;
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  direction: rtl;
+  text-align: right;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+button {
+  min-height: 56px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: 'Cairo', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  transition: var(--transition);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+button:active { transform: scale(0.96); }
+
+input, textarea {
+  font-family: 'Cairo', sans-serif;
+  font-size: 20px;
+  direction: rtl;
+  text-align: right;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  width: 100%;
+  min-height: 56px;
+  background: var(--surface);
+  color: var(--text);
+  transition: var(--transition);
+  outline: none;
+}
+input:focus, textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(46,170,28,0.15);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+  font-size: 18px;
+}
+
+.page-content {
+  padding: calc(var(--header-height) + 16px) 16px calc(var(--nav-height) + 24px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Page fade animation */
+.page-fade-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Horizontal scroll containers */
+.scroll-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-row > * { scroll-snap-align: start; flex-shrink: 0; }
+
+/* Toggle switch */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.toggle-switch {
+  position: relative;
+  width: 60px;
+  height: 34px;
+  min-height: 34px;
+  background: var(--border);
+  border-radius: 17px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+.toggle-switch.active { background: var(--green); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 28px;
+  height: 28px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch.active::after { right: auto; left: 3px; }
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Confetti animation */
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  z-index: 9999;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+/* SOS pulse */
+@keyframes sos-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(211,47,47,0.5); }
+  70% { box-shadow: 0 0 0 20px rgba(211,47,47,0); }
+  100% { box-shadow: 0 0 0 0 rgba(211,47,47,0); }
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Toast animation */
+@keyframes toastSlideIn {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes toastSlideOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(100px); opacity: 0; }
+}
+
+/* Exercise timer pulse */
+@keyframes timerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}

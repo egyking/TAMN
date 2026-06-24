@@ -1,0 +1,16 @@
+{
+  "name": "رفيق - Rafeeq",
+  "short_name": "رفيق",
+  "description": "رعاية تُطمئن قلبك • ونَس يملأ يومك",
+  "theme_color": "#2EAA1C",
+  "background_color": "#F5F7FA",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
