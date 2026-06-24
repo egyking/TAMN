@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import MovementProgress from '../components/movement/MovementProgress';
 import ExerciseTimer from '../components/movement/ExerciseTimer';
 import WeeklyStreak from '../components/movement/WeeklyStreak';
-import VideoEmbed from '../memories/VideoEmbed';
+import VideoEmbed from '../components/memories/VideoEmbed';
 
 const EXERCISES = [
   { id: 'walk', label: 'مشي في المكان 🚶‍♂️', duration: 300, desc: 'يساعد على تنشيط الدورة الدموية. قف مستقيماً وابدأ المشي في مكانك.' },
@@ -12,7 +12,7 @@ const EXERCISES = [
 
 const YOUTUBE_EXERCISES = [
   { title: 'تمارين جلوس لكبار السن', url: 'https://www.youtube.com/watch?v=Ev6yE55kYGw' },
-  { title: 'تمارين إطالة خفيفة', url: 'https://www.youtube.com/watch?v=11hQvH08Ezw' },
+  { title: 'تمارين إطالة خفيفة', url: 'https://www.youtube.com/watch?v=0gSELLy8Sw0' },
 ];
 
 export default function Movement() {
