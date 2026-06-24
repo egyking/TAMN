@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import VideoEmbed from '../memories/VideoEmbed';
 
 const CONTENT = [
-  { id: 'quran',    label: 'القرآن الكريم', icon: 'fa-solid fa-book-quran', color: '#2EAA1C', url: 'https://www.youtube.com/watch?v=0IzeUbs1zHw' },
-  { id: 'radio',    label: 'إذاعة القرآن',  icon: 'fa-solid fa-radio',      color: '#1A7DC4', url: 'https://www.youtube.com/watch?v=Fj-yRtn4X9E' },
-  { id: 'news',     label: 'أخبار اليوم',   icon: 'fa-solid fa-newspaper',  color: '#D32F2F', url: 'https://www.youtube.com/watch?v=R91kS9hQ4_M' },
-  { id: 'health',   label: 'نصائح طبية',    icon: 'fa-solid fa-stethoscope',color: '#F57C00', url: 'https://www.youtube.com/watch?v=9g0HIfY4Tig' },
-  { id: 'cooking',  label: 'طبخ ووصفات',    icon: 'fa-solid fa-utensils',   color: '#7B1FA2', url: 'https://www.youtube.com/watch?v=3M_k-3G_T1w' },
-  { id: 'nostalgia',label: 'كلاسيكيات',     icon: 'fa-solid fa-tv',         color: '#607D8B', url: 'https://www.youtube.com/watch?v=t1Z8x0wF32M' },
+  { id: 'quran',    label: 'القرآن الكريم', icon: 'fa-solid fa-book-quran', color: '#2EAA1C', url: 'https://www.youtube.com/watch?v=A2dY0K-lIko' },
+  { id: 'radio',    label: 'إذاعة القرآن',  icon: 'fa-solid fa-radio',      color: '#1A7DC4', url: 'https://www.youtube.com/watch?v=F_f0iZqNxy0' },
+  { id: 'news',     label: 'أخبار اليوم',   icon: 'fa-solid fa-newspaper',  color: '#D32F2F', url: 'https://www.youtube.com/watch?v=bVWXFdXgPUM' },
+  { id: 'health',   label: 'نصائح طبية',    icon: 'fa-solid fa-stethoscope',color: '#F57C00', url: 'https://www.youtube.com/watch?v=vV95oN_Kk2c' },
+  { id: 'cooking',  label: 'طبخ ووصفات',    icon: 'fa-solid fa-utensils',   color: '#7B1FA2', url: 'https://www.youtube.com/watch?v=eK96D74nE30' },
+  { id: 'nostalgia',label: 'كلاسيكيات',     icon: 'fa-solid fa-tv',         color: '#607D8B', url: 'https://www.youtube.com/watch?v=W536P_UqgGk' },
 ];
 
 export default function ContentGrid() {
