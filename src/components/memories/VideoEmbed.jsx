@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from '../shared/Modal';
-import { extractYouTubeId, getEmbedUrl, isYouTubeUrl, isGDriveUrl, getGDriveEmbedUrl } from '../../utils/youtube';
+import { getYouTubeEmbedSrc, isYouTubeUrl, isGDriveUrl, getGDriveEmbedUrl } from '../../utils/youtube';
 import { getVideoBlob } from '../../utils/db';
 
 export default function VideoEmbed({ memory, onClose }) {
@@ -39,7 +39,7 @@ export default function VideoEmbed({ memory, onClose }) {
         )
       ) : isYT ? (
         <iframe
-          src={getEmbedUrl(extractYouTubeId(memory.link))}
+          src={getYouTubeEmbedSrc(memory.link)}
           style={{ width: '100%', aspectRatio: '16/9', borderRadius: '12px', border: 'none' }}
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

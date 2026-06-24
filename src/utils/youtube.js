@@ -23,6 +23,15 @@ export const getEmbedUrl = (videoId) =>
 export const isYouTubeUrl = (url) => /youtube\.com|youtu\.be/.test(url || '');
 export const isGDriveUrl = (url) => /drive\.google\.com/.test(url || '');
 
+export const isYouTubeChannelLiveUrl = (url) => /\/embed\/live_stream\?channel=/.test(url || '');
+
+export const getYouTubeEmbedSrc = (url) => {
+  if (isYouTubeChannelLiveUrl(url)) {
+    return `${url}&autoplay=1&hl=ar`;
+  }
+  return getEmbedUrl(extractYouTubeId(url));
+};
+
 export const getGDriveEmbedUrl = (url) => {
   const match = url.match(/\/file\/d\/([^/]+)/);
   return match ? `https://drive.google.com/file/d/${match[1]}/preview` : url;

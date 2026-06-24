@@ -12,7 +12,7 @@ export default function Header() {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <img 
-          src="/logo.jpg" 
+          src="/logo.jpeg"
           alt="رفيق" 
           style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
           onError={(e) => { 
