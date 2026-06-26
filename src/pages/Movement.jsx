@@ -1,23 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MovementProgress from '../components/movement/MovementProgress';
 import ExerciseTimer from '../components/movement/ExerciseTimer';
 import WeeklyStreak from '../components/movement/WeeklyStreak';
 import VideoEmbed from '../components/memories/VideoEmbed';
-
-const EXERCISES = [
-  { id: 'walk', label: 'مشي في المكان 🚶‍♂️', duration: 300, desc: 'يساعد على تنشيط الدورة الدموية. قف مستقيماً وابدأ المشي في مكانك.' },
-  { id: 'breathe', label: 'تمرين التنفس العميق 🫁', duration: 120, desc: 'خذ نفساً عميقاً من الأنف، ثم أخرجه ببطء من الفم للاسترخاء.' },
-  { id: 'feet', label: 'تحريك القدمين 🦶', duration: 60, desc: 'وأنت جالس، ارفع كعبيك عن الأرض ثم أنزلهما لتنشيط الدم.' },
-];
-
-const YOUTUBE_EXERCISES = [
-  { title: 'تمارين جلوس لكبار السن', url: 'https://www.youtube.com/watch?v=Ev6yE55kYGw' },
-  { title: 'تمارين إطالة خفيفة', url: 'https://www.youtube.com/watch?v=0gSELLy8Sw0' },
-];
+import { DEFAULT_EXERCISES, DEFAULT_EXERCISE_VIDEOS, DEFAULT_TIPS } from '../config/defaultContent';
+import { firebaseContentOps } from '../firebase/firestore';
 
 export default function Movement() {
   const [activeTab, setActiveTab] = useState('progress');
   const [playingVideo, setPlayingVideo] = useState(null);
+  const [exercises, setExercises] = useState(DEFAULT_EXERCISES);
+  const [exerciseVideos, setExerciseVideos] = useState(DEFAULT_EXERCISE_VIDEOS);
+  const [tip, setTip] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = firebaseContentOps.subscribeToContent((data) => {
+      if (data.exerciseVideos && data.exerciseVideos.length > 0) {
+        setExerciseVideos(data.exerciseVideos.filter(v => v.enabled));
+      }
+      if (data.tips && data.tips.length > 0) {
+        const randomTip = data.tips[Math.floor(Math.random() * data.tips.length)];
+        setTip(randomTip);
+      }
+    });
+    setExerciseVideos(DEFAULT_EXERCISE_VIDEOS.filter(v => v.enabled));
+    const defaultTip = DEFAULT_TIPS[Math.floor(Math.random() * DEFAULT_TIPS.length)];
+    setTip(defaultTip);
+    return () => unsubscribe && unsubscribe();
+  }, []);
+
+  const enabledExercises = exercises.filter(e => e.enabled);
 
   return (
     <div className="page-content page-fade-enter-active">
@@ -62,7 +74,7 @@ export default function Movement() {
               <i className="fa-solid fa-lightbulb"></i> نصيحة اليوم
             </h3>
             <p style={{ fontSize: '18px', margin: 0 }}>
-              المشي لمدة 10 دقائق بعد الأكل يساعد في الهضم ويضبط مستوى السكر في الدم.
+              {tip}
             </p>
           </div>
         </div>
@@ -71,7 +83,7 @@ export default function Movement() {
           
           <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>فيديوهات تمارين مفيدة 📺</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            {YOUTUBE_EXERCISES.map((ex, i) => (
+            {exerciseVideos.map((ex, i) => (
               <button 
                 key={i}
                 onClick={() => setPlayingVideo({ title: ex.title, link: ex.url })}
@@ -90,9 +102,9 @@ export default function Movement() {
           </div>
 
           <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginTop: '8px' }}>تمارين بالمؤقت ⏱️</h3>
-          {EXERCISES.map(ex => (
+          {enabledExercises.map(ex => (
             <div key={ex.id} className="card">
-              <h2 className="card-title">{ex.label}</h2>
+              <h2 className="card-title">{ex.label} {ex.emoji}</h2>
               <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '16px' }}>
                 {ex.desc}
               </p>

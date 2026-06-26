@@ -6,6 +6,8 @@ const TABS = [
   { path: '/memories',  label: 'ذكرياتي', icon: 'fa-solid fa-heart',         color: '#2EAA1C' },
   { path: '/movement',  label: 'تحرّك',   icon: 'fa-solid fa-person-walking', color: '#1A7DC4' },
   { path: '/mytime',    label: 'وقتي',    icon: 'fa-solid fa-radio',          color: '#F57C00' },
+  { path: '/ai-chat',   label: 'سألني',   icon: 'fa-solid fa-robot',          color: '#6366F1' },
+  { path: '/admin',     label: 'الأدمن',  icon: 'fa-solid fa-shield-halved',  color: '#6B21A8' },
 ];
 
 export default function BottomNav() {

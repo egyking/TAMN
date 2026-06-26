@@ -10,6 +10,8 @@ import Emergency from './pages/Emergency';
 import Memories from './pages/Memories';
 import Movement from './pages/Movement';
 import MyTime from './pages/MyTime';
+import Admin from './pages/Admin';
+import AIChat from './pages/AIChat';
 
 // Layout
 import Header from './components/layout/Header';
@@ -56,6 +58,8 @@ function AppContent() {
         <Route path="/memories" element={<Memories />} />
         <Route path="/movement" element={<Movement />} />
         <Route path="/mytime" element={<MyTime />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/ai-chat" element={<AIChat />} />
       </Routes>
 
       {isSetupDone && <BottomNav />}
