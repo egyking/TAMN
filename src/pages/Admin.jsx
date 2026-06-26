@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { firebaseUserOps, firebaseMemoryOps, firebaseContentOps, firebaseAdminOps } from '../firebase/firestore';
 import { DEFAULT_CONTENT_ITEMS, DEFAULT_EXERCISE_VIDEOS, DEFAULT_TIPS } from '../config/defaultContent';
-import { saveGeminiKey, getGeminiKey, saveOpenRouterKey, getOpenRouterKey, askAI, suggestYouTubeVideos, testGeminiKey, testOpenRouterKey } from '../utils/ai';
+import { saveGeminiKey, getGeminiKey, saveOpenRouterKey, getOpenRouterKey, saveAINativeKey, getAINativeKey, askAI, suggestYouTubeVideos, testGeminiKey, testOpenRouterKey, testAINativeKey } from '../utils/ai';
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,6 +19,7 @@ export default function Admin() {
   const [newPassword, setNewPassword] = useState('');
   const [geminiKey, setGeminiKey] = useState('');
   const [openRouterKey, setOpenRouterKey] = useState('');
+  const [aiNativeKey, setAINativeKey] = useState('');
   const [showAiSuggest, setShowAiSuggest] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -57,6 +58,8 @@ export default function Admin() {
       if (key) setGeminiKey(key);
       const hfKey = getOpenRouterKey();
       if (hfKey) setOpenRouterKey(hfKey);
+      const aiKey = getAINativeKey();
+      if (aiKey) setAINativeKey(aiKey);
     } else {
       setLoginError(true);
       setTimeout(() => setLoginError(false), 2000);
@@ -88,6 +91,11 @@ export default function Admin() {
   const handleSaveOpenRouterKey = () => {
     saveOpenRouterKey(openRouterKey);
     alert('تم حفظ مفتاح OpenRouter');
+  };
+
+  const handleSaveAINativeKey = () => {
+    saveAINativeKey(aiNativeKey);
+    alert('تم حفظ مفتاح AI Native');
   };
 
   const handleAiSuggest = async () => {
@@ -369,6 +377,9 @@ export default function Admin() {
             openRouterKey={openRouterKey}
             setOpenRouterKey={setOpenRouterKey}
             onSaveOpenRouterKey={handleSaveOpenRouterKey}
+            aiNativeKey={aiNativeKey}
+            setAINativeKey={setAINativeKey}
+            onSaveAINativeKey={handleSaveAINativeKey}
           />
         )}
         {activeTab === 'settings' && (
@@ -715,13 +726,13 @@ function ExercisesTab({ exerciseVideos, onUpdate, onAdd, onRemove, onSave }) {
   );
 }
 
-function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpenRouterKey, onSaveOpenRouterKey }) {
+function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpenRouterKey, onSaveOpenRouterKey, aiNativeKey, setAINativeKey, onSaveAINativeKey }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState(null);
-  const [activeProvider, setActiveProvider] = useState('openrouter');
+  const [activeProvider, setActiveProvider] = useState('ainative');
 
   const handleTestGemini = async () => {
     if (!geminiKey) return;
@@ -747,6 +758,18 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
     }
   };
 
+  const handleTestAINative = async () => {
+    if (!aiNativeKey) return;
+    setTesting(true);
+    setTestResult(null);
+    const result = await testAINativeKey(aiNativeKey);
+    setTesting(false);
+    setTestResult(result);
+    if (result.success === true) {
+      onSaveAINativeKey();
+    }
+  };
+
   const handleAsk = async () => {
     if (!question) return;
     setLoading(true);
@@ -765,6 +788,22 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
         <button
+          onClick={() => { setActiveProvider('ainative'); setTestResult(null); }}
+          style={{
+            flex: 1,
+            padding: '12px',
+            border: activeProvider === 'ainative' ? '2px solid #10B981' : '2px solid var(--border)',
+            borderRadius: '12px',
+            backgroundColor: activeProvider === 'ainative' ? '#D1FAE5' : 'white',
+            cursor: 'pointer',
+            fontFamily: "'Cairo', sans-serif",
+            fontWeight: 700,
+            fontSize: '14px'
+          }}
+        >
+          AI Native Studio
+        </button>
+        <button
           onClick={() => { setActiveProvider('openrouter'); setTestResult(null); }}
           style={{
             flex: 1,
@@ -778,7 +817,7 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
             fontSize: '14px'
           }}
         >
-          OpenRouter (مجاني - نماذج متعددة)
+          OpenRouter
         </button>
         <button
           onClick={() => { setActiveProvider('gemini'); setTestResult(null); }}
@@ -794,11 +833,11 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
             fontSize: '14px'
           }}
         >
-          Google Gemini
+          Gemini
         </button>
       </div>
 
-      {activeProvider === 'openrouter' && (
+      {activeProvider === 'ainative' && (
         <div style={{
           backgroundColor: 'white',
           borderRadius: '12px',
@@ -806,18 +845,18 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           marginBottom: '16px'
         }}>
-          <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>OpenRouter API</h3>
+          <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>AI Native Studio API</h3>
           <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '12px' }}>
-            مجاني ويستخدم Gemma 3. سجّل في <a href="https://openrouter.ai" target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }}>OpenRouter</a> واحصل على مفتاح مجاني
+            احصل على مفتاح من: <a href="https://ainative.studio/dashboard/api-keys" target="_blank" rel="noreferrer" style={{ color: 'var(--blue)' }}>AINative Dashboard</a>
           </p>
           <div style={{ display: 'flex', gap: '8px' }}>
             <input
-              placeholder="sk-or-v1-xxxxxxxxxxxxxxxxxxxx"
-              value={openRouterKey}
-              onChange={(e) => { setOpenRouterKey(e.target.value); setTestResult(null); }}
+              placeholder="أدخل مفتاح API هنا"
+              value={aiNativeKey}
+              onChange={(e) => { setAINativeKey(e.target.value); setTestResult(null); }}
               style={{ flex: 1, fontSize: '14px', direction: 'ltr', textAlign: 'left' }}
             />
-            <button onClick={onSaveOpenRouterKey} style={{
+            <button onClick={onSaveAINativeKey} style={{
               backgroundColor: 'var(--green)',
               color: 'white',
               border: 'none',
@@ -831,15 +870,15 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
               حفظ
             </button>
             <button
-              onClick={handleTestOpenRouter}
-              disabled={testing || !openRouterKey}
+              onClick={handleTestAINative}
+              disabled={testing || !aiNativeKey}
               style={{
-                backgroundColor: testing || !openRouterKey ? '#ccc' : '#6366F1',
+                backgroundColor: testing || !aiNativeKey ? '#ccc' : '#10B981',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
                 padding: '8px 16px',
-                cursor: testing || !openRouterKey ? 'not-allowed' : 'pointer',
+                cursor: testing || !aiNativeKey ? 'not-allowed' : 'pointer',
                 fontFamily: "'Cairo', sans-serif",
                 fontWeight: 700,
                 whiteSpace: 'nowrap'
@@ -849,7 +888,7 @@ function AITab({ geminiKey, setGeminiKey, onSaveGeminiKey, openRouterKey, setOpe
             </button>
           </div>
           <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
-            يستخدم نموذج Google Gemma 3 المجاني - سريع وبدون حدود يومية
+            يستخدم GPT-4o-mini - سريع وذكي
           </p>
         </div>
       )}

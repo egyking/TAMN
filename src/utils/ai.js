@@ -94,6 +94,12 @@ export const askOpenRouter = async (question, apiKey) => {
 };
 
 export const askAI = async (question) => {
+  const aiNativeKey = localStorage.getItem('rafeeq_ainative_key');
+  if (aiNativeKey && aiNativeKey !== 'YOUR_AINATIVE_API_KEY') {
+    const result = await askAINative(question, aiNativeKey);
+    if (result.text) return result;
+  }
+
   const openRouterKey = localStorage.getItem('rafeeq_openrouter_key');
   if (openRouterKey && openRouterKey !== 'YOUR_OPENROUTER_API_KEY') {
     const result = await askOpenRouter(question, openRouterKey);
@@ -165,3 +171,67 @@ export const saveHuggingFaceKey = () => {};
 export const getGeminiKey = () => localStorage.getItem('rafeeq_gemini_key') || null;
 export const getOpenRouterKey = () => localStorage.getItem('rafeeq_openrouter_key') || null;
 export const getHuggingFaceKey = () => null;
+
+// AI Native Studio API
+const AI_NATIVE_BASE_URL = 'https://api.ainative.studio/v1';
+
+export const askAINative = async (question, apiKey) => {
+  const key = apiKey || localStorage.getItem('rafeeq_ainative_key') || '';
+  if (!key || key === 'YOUR_AINATIVE_API_KEY') {
+    return { error: 'NO_KEY', message: 'مفتاح AI Native غير موجود' };
+  }
+
+  try {
+    const response = await fetch(`${AI_NATIVE_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: question }
+        ],
+        max_tokens: 500,
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        return { error: 'INVALID_KEY', message: 'مفتاح API غير صالح' };
+      }
+      return { error: 'API_ERROR', message: `خطأ: ${data.error?.message || response.status}` };
+    }
+
+    if (data.choices?.[0]?.message?.content) {
+      return { text: data.choices[0].message.content };
+    }
+
+    return { error: 'NO_RESPONSE', message: 'لم يتم الرد' };
+  } catch (e) {
+    return { error: 'NETWORK', message: 'خطأ في الاتصال بالإنترنت' };
+  }
+};
+
+export const testAINativeKey = async (apiKey) => {
+  try {
+    const result = await askAINative('قل مرحبك فقط', apiKey);
+    if (result.text) {
+      return { success: true, response: result.text };
+    }
+    return { success: false, error: result.message || result.error };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+};
+
+export const saveAINativeKey = (key) => {
+  localStorage.setItem('rafeeq_ainative_key', key);
+};
+
+export const getAINativeKey = () => localStorage.getItem('rafeeq_ainative_key') || null;
